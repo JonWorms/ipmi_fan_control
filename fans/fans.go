@@ -7,8 +7,14 @@ import (
 	"strings"
 )
 
+var ipmitool = "ipmitool"
+
+func SetIPMITool(path string) {
+	ipmitool = path
+}
+
 func ipmicommand(args ...string) (string, error) {
-	out, err := exec.Command("ipmitool", args...).Output()
+	out, err := exec.Command(ipmitool, args...).Output()
 	if err != nil {
 		return "", err
 	}

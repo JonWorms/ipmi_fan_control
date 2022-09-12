@@ -22,19 +22,28 @@ GOOS=linux GOARCH=amd64 go build -o ipmi_fan_control ipmi_fan_control.go
 cp /path/to/binary /usr/local/bin/ipmi_fan_control
 ```
 
-##### copy service file
-```sh
-cp /path/to/service/systemd.service /usr/systemd/system/ipmi-fan-control.service
-systemctl daemon-reload
-service ipmi-fan-control start
-```
+##### create a map file
+see 'fan_speeds.cfg' for an example
+
+##### do a test run
+ipmi_fan_control -s /path/to/fan_speeds.cfg
+
+
+
+##### run as a service
+
+check out service/systemd.service 
+
+you may want to rename it to ipmi-fan-control.service on your system.
+
+
 ### PfSense
 
 ```sh
 GOOS=freebsd GOARCH=amd64 go build -o ipmi_fan_control ipmi_fan_control.go
 ```
 
-
+TODO: figure out how to run something as a service on PfSense/BSD
 
 
 
