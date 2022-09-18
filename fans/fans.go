@@ -2,27 +2,14 @@ package fans
 
 import (
 	"fmt"
-	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/jonworms/ipmi_fan_control/ipmi"
 )
 
-var ipmitool = "ipmitool"
-
-func SetIPMITool(path string) {
-	ipmitool = path
-}
-
-func ipmicommand(args ...string) (string, error) {
-	out, err := exec.Command(ipmitool, args...).Output()
-	if err != nil {
-		return "", err
-	}
-	return string(out[:]), nil
-}
-
 func GetNames() ([]string, error) {
-	resp, err := ipmicommand("-c", "sdr")
+	resp, err := ipmi.Command("-c", "sdr")
 	if err != nil {
 		return nil, err
 	}
@@ -44,20 +31,24 @@ func SetManualControl(on bool) error {
 	if !on {
 		controlWord = "0x01"
 	}
-	_, err := ipmicommand("raw", "0x30", "0x30", "0x01", controlWord)
+	_, err := ipmi.Command("raw", "0x30", "0x30", "0x01", controlWord)
 	return err
 }
 
-func SetFanSpeed(speed float32) error {
-
-	controlWord := strconv.FormatInt(int64(speed), 16)
-	if len(controlWord) == 1 {
-		controlWord = fmt.Sprintf("0%s", controlWord)
+func formatWord(value int64) string {
+	word := strconv.FormatInt(value, 16)
+	if len(word) == 1 {
+		word = fmt.Sprintf("0%s", word)
 	}
+	return fmt.Sprintf("0x%s", word)
+}
 
-	controlWord = fmt.Sprintf("0x%s", controlWord)
+func SetFanSpeed(fanBitmask uint, speed float32) error {
 
-	_, err := ipmicommand("raw", "0x30", "0x30", "0x02", "0xff", controlWord)
+	controlWord := formatWord(int64(speed))
+	fanMaskWord := formatWord(int64(fanBitmask))
+
+	_, err := ipmi.Command("raw", "0x30", "0x30", "0x02", fanMaskWord, controlWord)
 	return err
 	//ipmitool -I lanplus -H $IP -U $USER -P $PASS raw 0x30 0x30 0x02 0xff 0x##
 }

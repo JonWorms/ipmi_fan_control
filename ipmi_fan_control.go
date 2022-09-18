@@ -32,7 +32,7 @@ func adjustFans() (float32, float32, error) {
 
 	fs := speedmap.GetFanSpeed(temp)
 
-	fans.SetFanSpeed(fs)
+	fans.SetFanSpeed(0xff, fs)
 
 	return temp, fs, nil
 }
@@ -104,7 +104,7 @@ func main() {
 	flag.StringVar(&logfilePath, "l", "", "path to log file")
 	flag.Parse()
 
-	fans.SetIPMITool("/usr/local/bin/ipmitool")
+	//ipmi.SetExecutablePath("/usr/local/bin/ipmitool")
 
 	if verboseLevel > 0 {
 		log.Println("starting in verbose mode")

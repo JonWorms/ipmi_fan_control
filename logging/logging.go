@@ -22,6 +22,10 @@ var PrintError = func(e error) {
 	log.Println(e)
 }
 
+var Println = func(line string) {
+	log.Println(line)
+}
+
 func Open(logPath string) error {
 	log.Println("opening log file", logPath)
 	logfile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -40,6 +44,10 @@ func Open(logPath string) error {
 
 	PrintError = func(e error) {
 		logger.Println(e)
+	}
+
+	Println = func(line string) {
+		logger.Println(line)
 	}
 
 	return nil

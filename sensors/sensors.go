@@ -2,6 +2,8 @@ package sensors
 
 import (
 	"math"
+	"strconv"
+	"strings"
 
 	platformsensors "github.com/jonworms/ipmi_fan_control/sensors/platform_sensors"
 )
@@ -30,4 +32,15 @@ func GetAverageTemp() (float32, error) {
 		averageTemp += temp
 	}
 	return averageTemp / float32(len(temps)), nil
+}
+
+func GetAmbientTemperature() (int, error) {
+	reading, err := platformsensors.GetIPMISensorReading("Ambient Temp")
+	if err != nil {
+		return 0.0, err
+	}
+	// 25 (+/- 1) degrees C
+	tokens := strings.Split(reading, " ")
+	temp, err := strconv.ParseInt(tokens[0], 10, 32)
+	return int(temp), err
 }
