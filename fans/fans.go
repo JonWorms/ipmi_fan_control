@@ -8,6 +8,8 @@ import (
 	"github.com/jonworms/ipmi_fan_control/ipmi"
 )
 
+var fanSpeedTable []int64 = make([]int64, 8)
+
 func GetNames() ([]string, error) {
 	resp, err := ipmi.Command("-c", "sdr")
 	if err != nil {
@@ -45,10 +47,22 @@ func formatWord(value int64) string {
 
 func SetFanSpeed(fanBitmask uint, speed float32) error {
 
-	controlWord := formatWord(int64(speed))
-	fanMaskWord := formatWord(int64(fanBitmask))
+	update := false
+	for i, value := range fanSpeedTable {
+		if uint(i)&fanBitmask != 0 {
+			if value != int64(speed) {
+				update = true
+			}
+			fanSpeedTable[i] = int64(speed)
+		}
+	}
 
-	_, err := ipmi.Command("raw", "0x30", "0x30", "0x02", fanMaskWord, controlWord)
-	return err
+	if update {
+		controlWord := formatWord(int64(speed))
+		fanMaskWord := formatWord(int64(fanBitmask))
+		_, err := ipmi.Command("raw", "0x30", "0x30", "0x02", fanMaskWord, controlWord)
+		return err
+	}
+	return nil
 	//ipmitool -I lanplus -H $IP -U $USER -P $PASS raw 0x30 0x30 0x02 0xff 0x##
 }

@@ -8,7 +8,7 @@ Type=forking
 PIDFile=/run/ipmi_fan_control.pid
 Restart=always
 RestartSec=1
-ExecStart=/usr/bin/env ipmi_fan_control -v 1 -s /etc/fan_speeds.cfg -p $PIDFile -l /var/log/ipmi_fan_control.log
+ExecStart=/usr/bin/env ipmi_fan_control -v 1 -s /etc/fan_speeds.cfg -p /run/ipmi_fan_control.pid -l /var/log/ipmi_fan_control.log
 ExecStop=/bin/kill -s QUIT $MAINPID
 
 [Install]
