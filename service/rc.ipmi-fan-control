@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# PROVIDE: ipmi_fan_control
+# REQUIRE: DAEMON
+
+. /etc/rc.subr
+
+name=ipmi_fan_control
+desc="Fan Control Service for Dell PowerEdge Servers"
+rcvar=ipmi_fan_control_enable
+start_precmd="${name}_prestart"
+start_cmd="${name}_start"
+
+ipmi_fan_control_program="/usr/bin/${name}"
+
+pidfile="/var/run/${name}.pid"
+
+ipmi_fan_control_prestart()
+{
+    # load ipmi kernel module if not already
+    loaded=$(kldstat -q -n ipmi.ko || echo "not loaded")
+    if [ ! -z "$loaded" ]; then
+        echo "loading ipmi module"
+        kldload ipmi
+    fi
+    return 0
+}
+
+ipmi_fan_control_start()
+{
+    ${ipmi_fan_control_program} -v 1 -s "/etc/fan_speeds.cfg" -p "${pidfile}" -l "/var/log/${name}.log"
+}
+
+load_rc_config $name
+run_rc_command "$1"

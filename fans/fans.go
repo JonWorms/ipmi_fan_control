@@ -8,7 +8,7 @@ import (
 )
 
 func ipmicommand(args ...string) (string, error) {
-	out, err := exec.Command("ipmitool", args...).Output()
+	out, err := exec.Command(ipmitool, args...).Output()
 	if err != nil {
 		return "", err
 	}
