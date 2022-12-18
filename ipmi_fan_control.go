@@ -104,8 +104,6 @@ func main() {
 	flag.StringVar(&logfilePath, "l", "", "path to log file")
 	flag.Parse()
 
-	fans.SetIPMITool("/usr/local/bin/ipmitool")
-
 	if verboseLevel > 0 {
 		log.Println("starting in verbose mode")
 	}
